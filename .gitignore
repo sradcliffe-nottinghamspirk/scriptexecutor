@@ -1,1 +1,12 @@
-/buildroot-2017.02
+buildroot-*/
+output/bcm2711-rpi-4-b.dtb
+output/bcm2711-rpi-400.dtb
+output/bcm2711-rpi-cm4.dtb
+output/bootcode.bin
+output/fixup.dat
+output/fixup4.dat
+output/kernel.img
+output/overlays/
+output/scriptexecute.img
+output/start.elf
+output/start4.elf

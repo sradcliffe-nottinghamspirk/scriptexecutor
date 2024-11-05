@@ -1,6 +1,6 @@
 #!/bin/sh
 
-BUILDROOT=buildroot-2019.11.1
+BUILDROOT=buildroot-2023.11.1
 # Supported targets: cmhybrid (supports cm1 cm3), cm4
 TARGET=cm4
 
