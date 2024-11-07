@@ -18,6 +18,8 @@ case "$1" in
 	#
 	# Parse kernel cmdline options (cmdline.txt)
 	#
+	PREVIOUS_FAILURE=0
+
 	for p in `cat /proc/cmdline`; do
 		if [ "${p%%=*}" == "script" ]; then
 			SCRIPT="${p#*=}"
@@ -75,25 +77,25 @@ case "$1" in
 		
 		SCRIPT="${SCRIPT//\{server\}/[$HOST_IPV6]}"
 	else
-		# Expecting USB to switch to device mode and USB Ethernet adapter to be attached
+#		# Expecting USB to switch to device mode and USB Ethernet adapter to be attached
 	
-		echo "Note: shell is available on tty2 for debugging purposes"
-		mount -t debugfs none /sys/kernel/debug || true
-		/sbin/getty -L tty2 0 vt100 &
+#		echo "Note: shell is available on tty2 for debugging purposes"
+#		mount -t debugfs none /sys/kernel/debug || true
+#		/sbin/getty -L tty2 0 vt100 &
 	
-		echo "Waiting for eth0 to appear"
-		while [ ! -e /sys/class/net/eth0 ]; do
-			sleep 1
-		done
+#		echo "Waiting for eth0 to appear"
+#		while [ ! -e /sys/class/net/eth0 ]; do
+#			sleep 1
+#		done
 
-		ifconfig eth0 up
-		echo "Waiting for network link to go up"
-		while grep -q -v 1 /sys/class/net/eth0/carrier; do
-			sleep 1
-		done
+#		ifconfig eth0 up
+#		echo "Waiting for network link to go up"
+#		while grep -q -v 1 /sys/class/net/eth0/carrier; do
+#			sleep 1
+#		done
 
-		echo "Obtaining DHCP lease"
-		udhcpc -i eth0
+#		echo "Obtaining DHCP lease"
+#		udhcpc -i eth0
 	fi
 	
 	if [ "${SCRIPT%%:*}" == "http" ]; then
@@ -137,6 +139,43 @@ case "$1" in
 		curl -g --retry 10 --retry-connrefused -o /tmp/script "$SCRIPT"
 		echo "Executing script"
 		sh /tmp/script
+	elif [ "${SCRIPT%%:*}" == "mtp-cm4-f1" ]; then
+		echo ""
+		echo ""
+		echo "----------------------------------------------------------"
+		echo " Write eMMC image $(basename $FILE) from $DEVICE"
+		echo "----------------------------------------------------------"
+		echo ""
+		sh /root/write_cust_image.sh /tmp/root$FILE
+		if [ $? -ne 0 ]; then
+			PREVIOUS_FAILURE=1
+		fi
+	elif [ "${SCRIPT%%:*}" == "write_image" ]; then
+		PARAMS="${SCRIPT#*:}"
+		DEVICE="${PARAMS%%:*}"
+		FILE="${PARAMS#*:}"
+		echo ""
+		echo ""
+		echo "----------------------------------------------------------"
+		echo " Write eMMC image $(basename $FILE) from $DEVICE"
+		echo "----------------------------------------------------------"
+		echo ""
+		while [ ! $(ls /dev/mmcblk0 2> /dev/null) ]; do
+			read -p "Disconnect microUSB cable [Enter]: " confirm_resp
+			sleep 1
+		done
+		mkdir /tmp/root
+
+		while [ ! $(ls $DEVICE 2> /dev/null) ]; do
+			read -p "Install USB flash with image [Enter]: " confirm_resp
+			sleep 1
+		done
+
+		mount $DEVICE /tmp/root
+		sh /root/write_cust_image.sh /tmp/root$FILE
+		if [ $? -ne 0 ]; then
+			PREVIOUS_FAILURE=1
+		fi
 	elif [[ -n "$SCRIPT" ]]; then
 		SHARE=${SCRIPT%/*}
 		FILENAME=`basename $SCRIPT`

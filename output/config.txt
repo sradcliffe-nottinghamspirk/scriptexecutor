@@ -1,10 +1,24 @@
 dtoverlay=dwc2,dr_mode=peripheral
 
 # Set the pull ups for jumper reading
-gpio=5,13,21=pu
+#gpio=5,13,21=pu
 
 # For flashrom
 dtparam=audio=off
 dtoverlay=spi-gpio40-45
 
 initramfs scriptexecute.img
+
+enable_uart=1
+
+# Output more info/debug
+uart_2ndstage=1
+
+# Waveshare LCD
+hdmi_group=2
+hdmi_mode=87
+hdmi_cvt 1024 600 60 6 0 0 0
+hdmi_drive=1
+
+# Turn on LCD
+gpio=18=op,dh
