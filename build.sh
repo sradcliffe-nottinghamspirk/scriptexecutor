@@ -5,7 +5,7 @@ BUILDROOT=buildroot-2023.11.1
 TARGET=cm4
 
 #
-# Extract the tarball containing the unmodified buildroot version 
+# Extract the tarball containing the unmodified buildroot version
 #
 if [ ! -e $BUILDROOT ]; then
     tar xzf $BUILDROOT.tar.gz
@@ -13,7 +13,7 @@ fi
 
 #
 # Tell buildroot we have extra files in our external directory
-# and use our scriptexecute_defconfig configuration file 
+# and use our scriptexecute_defconfig configuration file
 #
 if [ ! -e $BUILDROOT/.config ]; then
     make -C $BUILDROOT BR2_EXTERNAL="$PWD/scriptexecute" scriptexecute_${TARGET}_defconfig
@@ -26,7 +26,7 @@ make -C $BUILDROOT
 
 #
 # Copy the files we are interested in from buildroot's "output/images" directory
-# to our "output" directory in top level directory 
+# to our "output" directory in top level directory
 #
 
 # initramfs file build by buildroot containing the root file system
