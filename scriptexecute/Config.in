@@ -1,1 +1,2 @@
 source "$BR2_EXTERNAL_SCRIPTEXECUTE_PATH/package/rpi-firmware-custom/Config.in"
+source "$BR2_EXTERNAL_SCRIPTEXECUTE_PATH/package/flashrom-custom/Config.in"
