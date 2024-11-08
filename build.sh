@@ -43,6 +43,7 @@ cp $BUILDROOT/output/images/*.dtb output
 mkdir -p output/overlays
 mv output/dwc2-overlay.dtb output/overlays/dwc2.dtbo
 mv output/spi-gpio40-45-overlay.dtb output/overlays/spi-gpio40-45.dtbo
+mv output/disable-bt-overlay.dtb output/overlays/disable-bt.dtbo
 
 echo
 echo Build complete. Files are in output folder.

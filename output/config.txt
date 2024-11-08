@@ -1,24 +1,30 @@
-dtoverlay=dwc2,dr_mode=peripheral
+#dtoverlay=dwc2,dr_mode=peripheral
+
+# Use below to assign ttyAMA0 (HW serial port) to GPIO14:15
+dtoverlay=disable-bt
 
 # Set the pull ups for jumper reading
 #gpio=5,13,21=pu
 
+# Boot a ramdisk .img file
+#boot_ramdisk=1
+
 # For flashrom
-dtparam=audio=off
-dtoverlay=spi-gpio40-45
+#dtparam=audio=off
+#dtoverlay=spi-gpio40-45
 
 initramfs scriptexecute.img
 
 enable_uart=1
 
 # Output more info/debug
-uart_2ndstage=1
+#uart_2ndstage=1
 
 # Waveshare LCD
-hdmi_group=2
-hdmi_mode=87
-hdmi_cvt 1024 600 60 6 0 0 0
-hdmi_drive=1
+#hdmi_group=2
+#hdmi_mode=87
+#hdmi_cvt 1024 600 60 6 0 0 0
+#hdmi_drive=1
 
 # Turn on LCD
-gpio=18=op,dh
+#gpio=18=op,dh

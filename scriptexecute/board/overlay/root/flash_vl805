@@ -1,0 +1,49 @@
+#!/bin/sh
+
+FLASH_FILE="see_vl805.bin"
+
+retcode=0
+
+cecho()
+{
+  RED='\033[0;31m'
+  GRN='\033[0;32m'
+  YEL='\033[0;33m'
+  BYEL='\033[1;33m'
+  NC='\033[0m'
+  REV='\033[0;7m'
+
+  case $1 in
+    FAIL)
+      COLOR=$RED ;;
+    PASS)
+      COLOR=$GRN ;;
+    WARN)
+      COLOR=$BYEL ;;
+    NOTE)
+      COLOR=$YEL ;;
+    YN)
+      COLOR=$REV ;;
+    *)
+      COLOR=$NC ;;
+  esac
+
+  printf "${COLOR}${2}${NC}"
+}
+
+result=$(lspci -n | grep "1106:3483")
+if [ $? != 0 ]; then
+    cecho "FAIL" "VL805 PCIe USB3.0 Hub not found\n"
+    retcode=$((retcode + 2))
+fi
+
+result=$(flashrom -p vl805 -w $FLASH_FILE)
+
+if [ $? != 0 ]; then
+    cecho "FAIL" "Flashing of VL805 FW **FAILED**\n"
+    retcode=$((retcode + 3))
+else
+    cecho "PASS" "VL805 Flashing PASSED\n"
+fi
+
+exit $retcode

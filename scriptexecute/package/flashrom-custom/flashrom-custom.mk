@@ -1,0 +1,50 @@
+################################################################################
+#
+# flashrom
+#
+################################################################################
+
+FLASHROM_CUSTOM_VERSION = 1.2-200-g6baa4052
+FLASHROM_CUSTOM_SOURCE = flashrom-v$(FLASHROM_CUSTOM_VERSION).tar.bz2
+FLASHROM_CUSTOM_SITE = https://github.com/sradcliffe-nottinghamspirk/flashrom/releases/download/v1.2-vl805
+#FLASHROM_CUSTOM_LICENSE = GPL-2.0+
+#FLASHROM_CUSTOM_LICENSE_FILES = COPYING
+
+ifeq ($(BR2_PACKAGE_LIBFTDI),y)
+FLASHROM_CUSTOM_DEPENDENCIES += host-pkgconf libftdi
+FLASHROM_CUSTOM_MAKE_OPTS += \
+	CONFIG_FT2232_SPI=yes \
+	CONFIG_USBBLASTER_SPI=yes
+else
+FLASHROM_CUSTOM_MAKE_OPTS += \
+	CONFIG_FT2232_SPI=no \
+	CONFIG_USBBLASTER_SPI=no
+endif
+
+FLASHROM_CUSTOM_DEPENDENCIES += pciutils
+
+ifeq ($(BR2_PACKAGE_LIBUSB),y)
+FLASHROM_CUSTOM_DEPENDENCIES += host-pkgconf libusb
+FLASHROM_CUSTOM_MAKE_OPTS += CONFIG_ENABLE_LIBUSB1_PROGRAMMERS=yes
+else
+FLASHROM_CUSTOM_MAKE_OPTS += CONFIG_ENABLE_LIBUSB1_PROGRAMMERS=no
+endif
+
+ifeq ($(BR2_PACKAGE_PCIUTILS),y)
+FLASHROM_CUSTOM_DEPENDENCIES += pciutils
+FLASHROM_CUSTOM_MAKE_OPTS += CONFIG_ENABLE_LIBPCI_PROGRAMMERS=yes
+else
+FLASHROM_CUSTOM_MAKE_OPTS += CONFIG_ENABLE_LIBPCI_PROGRAMMERS=no
+endif
+
+define FLASHROM_CUSTOM_BUILD_CMDS
+	$(TARGET_MAKE_ENV) $(MAKE) $(TARGET_CONFIGURE_OPTS) \
+		CFLAGS="$(TARGET_CFLAGS) -DHAVE_STRNLEN" \
+		$(FLASHROM_CUSTOM_MAKE_OPTS) -C $(@D)
+endef
+
+define FLASHROM_CUSTOM_INSTALL_TARGET_CMDS
+	$(INSTALL) -m 0755 -D $(@D)/flashrom $(TARGET_DIR)/usr/sbin/flashrom
+endef
+
+$(eval $(generic-package))
