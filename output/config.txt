@@ -7,7 +7,7 @@ dtoverlay=disable-bt
 #gpio=5,13,21=pu
 
 # Boot a ramdisk .img file
-#boot_ramdisk=1
+boot_ramdisk=1
 
 # For flashrom
 #dtparam=audio=off

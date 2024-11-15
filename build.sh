@@ -17,12 +17,20 @@ fi
 #
 if [ ! -e $BUILDROOT/.config ]; then
     make -C $BUILDROOT BR2_EXTERNAL="$PWD/scriptexecute" scriptexecute_${TARGET}_defconfig
+    if [ $? -ne 0 ]; then
+        echo "**Abort**: Could not make buildroot configuration"
+        exit -1
+    fi
 fi
 
 #
 # Build everything
 #
 make -C $BUILDROOT
+if [ $? -ne 0 ]; then
+    echo "**FAILED to make buildroot - fix issue and retry**"
+    exit -2
+fi
 
 #
 # Copy the files we are interested in from buildroot's "output/images" directory
