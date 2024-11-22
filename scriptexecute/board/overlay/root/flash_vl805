@@ -1,6 +1,6 @@
 #!/bin/sh
 
-FLASH_FILE="see_vl805.bin"
+FLASH_FILE="/root/see_vl805.bin"
 
 retcode=0
 

@@ -20,6 +20,13 @@ case "$1" in
 	#
 	PREVIOUS_FAILURE=0
 
+	sleep 5
+
+	echo "========================================================================"
+	echo "SCRIPTEXECUTE: ${MODEL} (CPU Temp: $TEMP)"
+	echo "               Serial # ${SERIAL}"
+	echo "========================================================================"
+
 	for p in `cat /proc/cmdline`; do
 		if [ "${p%%=*}" == "script" ]; then
 			SCRIPT="${p#*=}"
@@ -72,35 +79,15 @@ case "$1" in
 		ifconfig usb0 add fe80::1/64 up
 		ifconfig -a
 		echo "My IPv6 is: fe80::1 / IPv6 of host is: ${HOST_IPV6}"
-		
+
 		sleep 2
-		
+
 		SCRIPT="${SCRIPT//\{server\}/[$HOST_IPV6]}"
-	else
-#		# Expecting USB to switch to device mode and USB Ethernet adapter to be attached
-	
-#		echo "Note: shell is available on tty2 for debugging purposes"
-#		mount -t debugfs none /sys/kernel/debug || true
-#		/sbin/getty -L tty2 0 vt100 &
-	
-#		echo "Waiting for eth0 to appear"
-#		while [ ! -e /sys/class/net/eth0 ]; do
-#			sleep 1
-#		done
-
-#		ifconfig eth0 up
-#		echo "Waiting for network link to go up"
-#		while grep -q -v 1 /sys/class/net/eth0/carrier; do
-#			sleep 1
-#		done
-
-#		echo "Obtaining DHCP lease"
-#		udhcpc -i eth0
 	fi
-	
+
 	if [ "${SCRIPT%%:*}" == "http" ]; then
 		SCRIPT="${SCRIPT//\{model\}/$MODEL_ESCAPED}"
-		SCRIPT="${SCRIPT//\{serial\}/$SERIAL}"	
+		SCRIPT="${SCRIPT//\{serial\}/$SERIAL}"
 		SCRIPT="${SCRIPT//\{temp\}/$TEMP}"
 		if [ -e /sys/block/mmcblk0/size ]; then
 			STORAGESIZE=`cat /sys/block/mmcblk0/size`
@@ -134,19 +121,18 @@ case "$1" in
                         done
                 fi
 		SCRIPT="${SCRIPT//\{jumper\}/$JUMPER}"
-		
+
 		echo "Downloading script from $SCRIPT"
 		curl -g --retry 10 --retry-connrefused -o /tmp/script "$SCRIPT"
 		echo "Executing script"
 		sh /tmp/script
-	elif [ "${SCRIPT%%:*}" == "mtp-cm4-f1" ]; then
+	elif [ "${SCRIPT%%:*}" == "do_mtp_cm4_f1" ]; then
 		echo ""
+		echo "------------------------"
+		echo " MTP CM4 F1 Programming "
+		echo "------------------------"
 		echo ""
-		echo "----------------------------------------------------------"
-		echo " Write eMMC image $(basename $FILE) from $DEVICE"
-		echo "----------------------------------------------------------"
-		echo ""
-		sh /root/write_cust_image.sh /tmp/root$FILE
+		sh /root/do_mtp_cm4_f1
 		if [ $? -ne 0 ]; then
 			PREVIOUS_FAILURE=1
 		fi
@@ -179,7 +165,7 @@ case "$1" in
 	elif [[ -n "$SCRIPT" ]]; then
 		SHARE=${SCRIPT%/*}
 		FILENAME=`basename $SCRIPT`
-		
+
 		echo "Mounting NFS share $SHARE"
 		mount -t nfs -o nolock,ro $SHARE /mnt
 		echo "Executing script $FILENAME"
@@ -195,7 +181,7 @@ case "$1" in
 		killall -SIGUSR2 udhcpc
 		sleep 1
 	fi
-	
+
 	#halt
         ;;
   stop)

@@ -1,1 +1,1 @@
-console=tty1 console=ttyAMA0,115200 script=mtp_cm4_f1
+console=tty1 console=ttyAMA0,115200 script=do_mtp_cm4_f1
