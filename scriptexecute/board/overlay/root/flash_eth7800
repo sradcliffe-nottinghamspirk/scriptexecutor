@@ -2,36 +2,63 @@
 
 FLASH_FILE="/root/see_7800.bin"
 
+cecho()
+{
+  RED='\033[0;31m'
+  GRN='\033[0;32m'
+  YEL='\033[0;33m'
+  BYEL='\033[1;33m'
+  NC='\033[0m'
+  REV='\033[0;7m'
+
+  case $1 in
+    FAIL)
+      COLOR=$RED ;;
+    PASS)
+      COLOR=$GRN ;;
+    WARN)
+      COLOR=$BYEL ;;
+    NOTE)
+      COLOR=$YEL ;;
+    YN)
+      COLOR=$REV ;;
+    *)
+      COLOR=$NC ;;
+  esac
+
+  printf "${COLOR}${2}${NC}"
+}
+
 result=$(lsusb | grep "0424:7800")
 if [ $? != 0 ]; then
-    echo "*** FAIL: LAN7800 Gb Ethernet not found"
+    cecho "FAIL" "LAN7800 Gb Ethernet not found\n"
     exit 2
 fi
 
 result=$(ethtool -E eth1 magic 0x78A5 offset 0 length 254 < $FLASH_FILE)
 
 if [ $? != 0 ]; then
-    echo "*** FAIL: Flashing of LAN7800 EEPROM Failed"
+    cecho "FAIL" "Flashing of LAN7800 EEPROM **Failed**\n"
     exit 3
 fi
 
 result=$(i2cdump -y -r 0xfa-0xff 10 0x50 b | tail -n 1)
 
 if [ $? != 0 ]; then
-    echo "*** FAIL: Reading of EEPROM MAC address Failed"
+    cecho "FAIL" "Reading of EEPROM MAC address **Failed**\n"
     exit 4
 fi
 mac=$(echo $result | cut -b 4-21)
-echo "Result: $result"
-echo "MAC: $mac"
+#echo "Result: $result"
+#echo "MAC: $mac"
 result=$(echo $mac | xxd -p -r | ethtool -E eth1 magic 0x78A5 offset 1 length 6)
 
 
 if [ $? != 0 ]; then
-    echo "*** FAIL: Program of LAN7800 MAC address Failed"
+    cecho "FAIL" "Program of LAN7800 MAC address **Failed**\n"
     exit 5
 fi
 
-echo "PASS: LAN7800 Programming (MAC: $mac)"
+cecho "PASS" "LAN7800 Programming PASSED (MAC: $mac)\n"
 
 exit 0

@@ -62,21 +62,34 @@ prompt_yn()
   return $result
 }
 
+echo ""
+cecho "NOTE" "------------------------\n"
+cecho "NOTE" " MTP CM4 F1 Programming \n"
+cecho "NOTE" "------------------------\n"
+echo ""
+
 sh /root/flash_vl805
-if [ $? -ne 0 ]; then
+retcode = $?
+if [ $retcode -ne 0 ]; then
+  echo ""
+  cecho "FAIL" "F1 VL805 Programming failed with code $retcode\n"
   exit 1
 fi
 
 sh /root/flash_eth7800
-if [ $? -ne 0 ]; then
-  echo "Can't find eth7800 chip.  A reboot is required after initial vl805 programming."
+retcode = $?
+if [ $retcode -ne 0 ]; then
+  cecho "WARN" "A reboot is required after initial vl805 programming to find eth7800.\n"
   prompt_yn "OK to reboot?"
   if [ $? -ne 0 ]; then
+    echo ""
+    cecho "FAIL" "F1 eth7800 Programming failed with code $retcode\n"
     exit 1
   else
     reboot
     exit 0
   fi
-elif [ $? -ne 0 ]; then
-  exit 1
 fi
+
+echo ""
+cecho "PASS" "F1 testing is complete - PASSED\n"

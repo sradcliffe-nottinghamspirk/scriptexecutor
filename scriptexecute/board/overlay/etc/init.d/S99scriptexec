@@ -127,11 +127,6 @@ case "$1" in
 		echo "Executing script"
 		sh /tmp/script
 	elif [ "${SCRIPT%%:*}" == "do_mtp_cm4_f1" ]; then
-		echo ""
-		echo "------------------------"
-		echo " MTP CM4 F1 Programming "
-		echo "------------------------"
-		echo ""
 		sh /root/do_mtp_cm4_f1
 		if [ $? -ne 0 ]; then
 			PREVIOUS_FAILURE=1
