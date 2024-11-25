@@ -69,7 +69,7 @@ cecho "NOTE" "------------------------\n"
 echo ""
 
 sh /root/flash_vl805
-retcode = $?
+retcode=$?
 if [ $retcode -ne 0 ]; then
   echo ""
   cecho "FAIL" "F1 VL805 Programming failed with code $retcode\n"
@@ -77,7 +77,7 @@ if [ $retcode -ne 0 ]; then
 fi
 
 sh /root/flash_eth7800
-retcode = $?
+retcode=$?
 if [ $retcode -ne 0 ]; then
   cecho "WARN" "A reboot is required after initial vl805 programming to find eth7800.\n"
   prompt_yn "OK to reboot?"
