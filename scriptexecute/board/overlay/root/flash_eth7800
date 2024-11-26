@@ -32,15 +32,15 @@ cecho()
 
 result=$(lsusb | grep "0424:7800")
 if [ $? != 0 ]; then
-    cecho "FAIL" "LAN7800 Gb Ethernet not found\n"
-    exit 2
+    cecho "FAIL" "Could not find LAN7800 Ethernet - reboot needed?\n"
+    exit 10
 fi
 
 result=$(ifconfig $NETWORK up)
 
 if [ $? != 0 ]; then
-    cecho "FAIL" "Could not find LAN7800 Ethernet - reboot needed?\n"
-    exit 10
+    cecho "FAIL" "LAN7800 Gb Ethernet device not found\n"
+    exit 2
 fi
 
 result=$(ethtool -E $NETWORK magic 0x78A5 offset 0 length 254 < $FLASH_FILE)
