@@ -1,0 +1,48 @@
+#!/bin/sh
+
+FIND_QTY=3
+FIND_DEVICES="usb-storage"
+# Force finding only USB2.0 High-Speed USB flash drives
+#FIND_DEVICES="usb-storage, 480M"
+
+cecho()
+{
+  RED='\033[0;31m'
+  GRN='\033[0;32m'
+  YEL='\033[0;33m'
+  BYEL='\033[1;33m'
+  NC='\033[0m'
+  REV='\033[0;7m'
+
+  case $1 in
+    FAIL)
+      COLOR=$RED ;;
+    PASS)
+      COLOR=$GRN ;;
+    WARN)
+      COLOR=$BYEL ;;
+    NOTE)
+      COLOR=$YEL ;;
+    YN)
+      COLOR=$REV ;;
+    *)
+      COLOR=$NC ;;
+  esac
+
+  printf "${COLOR}${2}${NC}"
+}
+
+result=$(lsusb -t | grep $FIND_DEVICES | wc -l)
+if [ $? != 0 ]; then
+    cecho "FAIL" "Error tring to find '$FIND_DEVICES' device(s)\n"
+    exit 2
+fi
+
+if [ $result -ne $FIND_QTY ]; then
+    cecho "FAIL" "Did not find exactly $FIND_QTY of '$FIND_DEVICES' device(s)\n"
+    exit 3
+fi
+
+cecho "PASS" "Found $FIND_QTY of '$FIND_DEVICES' device(s)\n"
+
+exit 0

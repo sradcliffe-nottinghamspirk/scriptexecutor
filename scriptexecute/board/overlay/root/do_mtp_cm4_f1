@@ -62,6 +62,9 @@ prompt_yn()
   return $result
 }
 
+# Suppress all but panic kernel messages from appearing on the console
+dmesg -n 1
+
 echo ""
 cecho "NOTE" "------------------------\n"
 cecho "NOTE" " MTP CM4 F1 Programming \n"
@@ -78,8 +81,9 @@ fi
 
 sh /root/flash_eth7800
 retcode=$?
-if [ $retcode -ne 0 ]; then
+if [ $retcode -eq 10 ]; then
   cecho "WARN" "A reboot is required after initial vl805 programming to find eth7800.\n"
+  echo ""
   prompt_yn "OK to reboot?"
   if [ $? -ne 0 ]; then
     echo ""
@@ -89,7 +93,26 @@ if [ $retcode -ne 0 ]; then
     reboot
     exit 0
   fi
+elif [ $retcode -ne 0 ]; then
+  echo ""
+  cecho "FAIL" "F1 eth7800 Programming failed with code $retcode\n"
+  exit 1
 fi
+
+while [ 1 ]; do
+  sh /root/test_usb2_3xflash
+  retcode=$?
+  if [ $retcode -eq 0 ]; then
+    break
+  fi
+
+  prompt_yn "Verify 3x USB2 High-Speed flash drives are installed, retry"
+  if [ $? -ne 0 ]; then
+    echo ""
+    cecho "FAIL" "F1 USB Port testing failed with code $retcode\n"
+    exit 1
+  fi
+done
 
 echo ""
 cecho "PASS" "F1 testing is complete - PASSED\n"
