@@ -1,6 +1,7 @@
 #!/bin/sh
 
 FLASH_FILE="/root/see_7800.bin"
+NETWORK="enp1s0u1"
 
 cecho()
 {
@@ -35,7 +36,14 @@ if [ $? != 0 ]; then
     exit 2
 fi
 
-result=$(ethtool -E eth1 magic 0x78A5 offset 0 length 254 < $FLASH_FILE)
+result=$(ifconfig $NETWORK up)
+
+if [ $? != 0 ]; then
+    cecho "FAIL" "Could not find LAN7800 Ethernet - reboot needed?\n"
+    exit 10
+fi
+
+result=$(ethtool -E $NETWORK magic 0x78A5 offset 0 length 254 < $FLASH_FILE)
 
 if [ $? != 0 ]; then
     cecho "FAIL" "Flashing of LAN7800 EEPROM **Failed**\n"
@@ -51,7 +59,7 @@ fi
 mac=$(echo $result | cut -b 4-21)
 #echo "Result: $result"
 #echo "MAC: $mac"
-result=$(echo $mac | xxd -p -r | ethtool -E eth1 magic 0x78A5 offset 1 length 6)
+result=$(echo $mac | xxd -p -r | ethtool -E $NETWORK magic 0x78A5 offset 1 length 6)
 
 
 if [ $? != 0 ]; then
