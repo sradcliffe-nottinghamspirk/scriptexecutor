@@ -23,11 +23,11 @@ dtparam=i2c_vc=on
 # Output more info/debug
 #uart_2ndstage=1
 
-# Waveshare LCD
-hdmi_group=2
-hdmi_mode=87
-hdmi_cvt 1024 600 60 6 0 0 0
-hdmi_drive=1
+## Waveshare LCD
+#hdmi_group=2
+#hdmi_mode=87
+#hdmi_cvt 1024 600 60 6 0 0 0
+#hdmi_drive=1
 
 # Turn on LCD
 #gpio=18=op,dh

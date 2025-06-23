@@ -4,6 +4,9 @@
 # Uncomment to skip operator confirmation prior to rebooting:
 #DONT_ASK_TO_CONFIRM_WRITE="1"
 
+# Comment to test for 3x High-speed USB Flash drives
+SKIP_USB_TESTS="1"
+
 cecho()
 {
   RED='\033[0;31m'
@@ -99,20 +102,21 @@ elif [ $retcode -ne 0 ]; then
   exit 1
 fi
 
-while [ 1 ]; do
-  sh /root/test_usb2_3xflash
-  retcode=$?
-  if [ $retcode -eq 0 ]; then
-    break
-  fi
+if [ $SKIP_USB_TESTS -ne 1 ]; then
+  while [ 1 ]; do
+    sh /root/test_usb2_3xflash
+    retcode=$?
+    if [ $retcode -eq 0 ]; then
+      break
+    fi
 
-  prompt_yn "Verify 3x USB2 High-Speed flash drives are installed, retry"
-  if [ $? -ne 0 ]; then
-    echo ""
-    cecho "FAIL" "F1 USB Port testing failed with code $retcode\n"
-    exit 1
-  fi
-done
-
+    prompt_yn "Verify 3x USB2 High-Speed flash drives are installed, retry"
+    if [ $? -ne 0 ]; then
+      echo ""
+      cecho "FAIL" "F1 USB Port testing failed with code $retcode\n"
+      exit 1
+    fi
+  done
+fi
 echo ""
 cecho "PASS" "F1 testing is complete - PASSED\n"
