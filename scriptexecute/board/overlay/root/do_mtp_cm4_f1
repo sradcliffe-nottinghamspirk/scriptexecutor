@@ -1,11 +1,8 @@
 #!/bin/sh
 
 # -----------------------------
-# Uncomment to skip operator confirmation prior to rebooting:
-#DONT_ASK_TO_CONFIRM_WRITE="1"
-
 # Comment to test for 3x High-speed USB Flash drives
-SKIP_USB_TESTS="1"
+SKIP_USB_TESTS=1
 
 cecho()
 {
